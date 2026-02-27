@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tótem Turístico - Fray Mamerto Esquiú</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <button id="adminCornerBtn" class="admin-corner" type="button" aria-label="Abrir panel admin">Admin</button>
+        <div class="lang-switch">
+          <button id="langEsBtn" class="btn lang-btn selected" type="button">ES</button>
+          <button id="langEnBtn" class="btn lang-btn" type="button">EN</button>
+        </div>
+        <h1 id="welcomeTapTarget">¡Bienvenido/a a Fray Mamerto Esquiú!</h1>
+        <p id="welcomeSubtitle">Nos ayuda si respondés esta encuesta. Tarda 1 minuto.</p>
+      </header>
+
+      <section class="screen active" data-screen="0">
+        <button id="startBtn" class="btn btn-primary btn-xl">Comenzar</button>
+      </section>
+
+      <section class="screen" data-screen="1">
+        <h2 id="screen1Title">¿De dónde nos visitás?</h2>
+        <div class="button-row">
+          <button class="btn btn-choice" data-origin="AR" id="originArBtn">Argentina</button>
+          <button class="btn btn-choice" data-origin="INT" id="originIntBtn">Otro país</button>
+        </div>
+
+        <div id="argentinaSelector" class="selector-box hidden">
+          <h3 id="provinceTitle">Seleccioná tu provincia</h3>
+          <div id="argentinaMapContainer" class="map-wrapper"></div>
+          <div class="map-tools">
+            <button id="resetMapBtn" class="btn" type="button">Ver mapa completo</button>
+          </div>
+          <p id="mapStatus" class="error hidden"></p>
+          <div id="provinceList" class="province-list"></div>
+          <p class="selection"><span id="provinceLabel">Provincia:</span> <strong id="selectedProvince">Ninguna</strong></p>
+        </div>
+
+        <div id="countrySelector" class="selector-box hidden">
+          <h3 id="countryTitle">Seleccioná tu país</h3>
+          <input id="countrySearch" class="input" type="text" inputmode="none" readonly placeholder="Buscar país..." />
+          <div id="countryQuickPicks" class="chip-row"></div>
+          <div id="countryList" class="country-list"></div>
+          <p class="selection"><span id="countryLabel">País:</span> <strong id="selectedCountry">Ninguno</strong></p>
+        </div>
+
+        <div class="footer-actions">
+          <button class="btn btn-primary" id="toScreen2">Continuar</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="2">
+        <h2 id="screen2Title">¿Qué edad tenés?</h2>
+        <div class="age-control">
+          <button class="btn btn-step" id="ageMinus">-</button>
+          <input id="ageInput" class="input age-input" type="text" inputmode="none" readonly />
+          <button class="btn btn-step" id="agePlus">+</button>
+        </div>
+        <div id="ageKeypad" class="keypad"></div>
+        <div class="footer-actions">
+          <button class="btn btn-primary" id="toScreen3">Continuar</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="3">
+        <h2 id="screen3Title">¿Es tu primera vez en Fray?</h2>
+        <div class="button-row">
+          <button class="btn btn-choice" data-first-time="true" id="firstTimeYesBtn">Sí</button>
+          <button class="btn btn-choice" data-first-time="false" id="firstTimeNoBtn">No</button>
+        </div>
+        <div class="footer-actions">
+          <button class="btn btn-primary" id="toScreen4">Continuar</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="4">
+        <h2 id="screen4Title">¿Qué te motivó a visitarnos?</h2>
+        <div id="motivesGrid" class="toggle-grid"></div>
+        <input id="motiveOtherText" class="input hidden" type="text" inputmode="none" readonly maxlength="60" placeholder="Especificá otro motivo (opcional)" />
+        <div class="footer-actions">
+          <button class="btn btn-primary" id="toScreen5">Continuar</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="5">
+        <h2 id="screen5Title">¿Qué lugares visitaste o pensás visitar?</h2>
+        <div id="placesGrid" class="toggle-grid"></div>
+        <input id="placeOtherText" class="input hidden" type="text" inputmode="none" readonly maxlength="60" placeholder="Especificá otro lugar (opcional)" />
+        <div class="footer-actions">
+          <button class="btn btn-primary" id="toScreen6">Continuar</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="6">
+        <h2 id="screen6Title">¿Cómo calificarías tu experiencia?</h2>
+        <div id="satisfactionRow" class="satisfaction-row"></div>
+        <textarea id="improvementComment" class="input textarea" maxlength="120" inputmode="none" readonly placeholder="¿Qué mejorarías? (opcional, máx. 120 caracteres)"></textarea>
+        <div class="footer-actions">
+          <button class="btn btn-primary" id="finishBtn">Finalizar</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="7">
+        <h2 id="thanksTitle">¡Gracias por tu visita!</h2>
+        <p id="countdownText">Volviendo al inicio en 10...</p>
+        <button class="btn btn-primary" id="newResponseBtn">Nueva respuesta</button>
+      </section>
+    </main>
+
+    <div id="textKeyboard" class="text-keyboard hidden">
+      <div id="textKeyboardKeys" class="text-keyboard-keys"></div>
+      <div class="text-keyboard-actions">
+        <button id="textSpaceBtn" type="button" class="btn">Espacio</button>
+        <button id="textBackspaceBtn" type="button" class="btn">⌫</button>
+        <button id="textDoneBtn" type="button" class="btn btn-primary">Listo</button>
+      </div>
+    </div>
+
+    <aside id="adminModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card">
+        <h2 id="adminTitle">Panel Admin</h2>
+        <div id="pinStep">
+          <p id="adminPinLabel">Ingresá PIN</p>
+          <input id="adminPinInput" class="input" type="password" inputmode="none" maxlength="12" readonly />
+          <div id="adminPinKeyboard" class="pin-keypad"></div>
+          <div class="button-row compact">
+            <button class="btn btn-primary" id="adminUnlockBtn">Entrar</button>
+            <button class="btn" id="adminCloseBtn">Cerrar</button>
+          </div>
+          <p class="error" id="adminPinError"></p>
+        </div>
+
+        <div id="adminPanel" class="hidden">
+          <h3 id="metricsTitle">Métricas rápidas</h3>
+          <div class="admin-filters">
+            <label>
+              <span id="fromDateLabel">Desde</span>
+              <input id="filterFromDate" class="input" type="date" />
+            </label>
+            <label>
+              <span id="toDateLabel">Hasta</span>
+              <input id="filterToDate" class="input" type="date" />
+            </label>
+            <button class="btn btn-primary" id="applyFilterBtn">Aplicar filtro</button>
+            <button class="btn" id="clearFilterBtn">Limpiar</button>
+          </div>
+          <div id="visualDashboard" class="visual-dashboard"></div>
+          <div id="metricsBox" class="metrics"></div>
+          <div class="dashboard-table-wrap">
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th id="thDate">Fecha</th>
+                  <th id="thOrigin">Procedencia</th>
+                  <th id="thAge">Edad</th>
+                  <th id="thFirst">Primera vez</th>
+                  <th id="thSat">Satisfacción</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardRows"></tbody>
+            </table>
+          </div>
+          <div class="button-row wrap">
+            <button class="btn" id="exportCsvBtn">Exportar CSV</button>
+            <button class="btn" id="exportJsonBtn">Exportar JSON</button>
+            <button class="btn btn-danger" id="clearDataBtn">Borrar datos</button>
+            <button class="btn" id="adminLogoutBtn">Salir</button>
+          </div>
+          <p class="error" id="adminActionMsg"></p>
+        </div>
+      </div>
+    </aside>
+
+    <script>
+      window.APP_CONFIG = {{ app_config | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>

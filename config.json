@@ -1,0 +1,7 @@
+{
+  "admin_pin": "1234",
+  "kiosk_id": "FME-001",
+  "age_min": 0,
+  "age_max": 110,
+  "countdown_seconds": 10
+}
